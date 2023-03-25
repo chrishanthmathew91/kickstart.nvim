@@ -90,14 +90,27 @@ require('lazy').setup({
       'folke/neodev.nvim',
     },
   },
-
+  { 'kyazdani42/nvim-web-devicons' },
   { -- Autocompletion
     'hrsh7th/nvim-cmp',
     dependencies = { 'hrsh7th/cmp-nvim-lsp', 'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip' },
   },
 
+  { 'glepnir/lspsaga.nvim', branch = 'main' },
+  { 'jose-elias-alvarez/typescript.nvim' },
+  { 'onsails/lspkind.nvim' },
+
+  { 'jose-elias-alvarez/null-ls.nvim' },
+  { 'jayp0521/mason-null-ls.nvim' },
+
+  { 'tpope/vim-surround' },
+  { 'vim-scripts/ReplaceWithRegister' },
+
+  { 'windwp/nvim-autopairs' },
+  { 'windwp/nvim-ts-autotag', after = 'nvim-treesitter' },
   -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim', opts = {} },
+  -- { 'folke/which-key.nvim', opts = {} },
+  { 'folke/tokyonight.nvim', opts = {} },
   { -- Adds git releated signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
@@ -113,20 +126,20 @@ require('lazy').setup({
   },
 
   { -- Theme inspired by Atom
-    'navarasu/onedark.nvim',
+    'folke/tokyonight.nvim',
     priority = 1000,
     config = function()
-      vim.cmd.colorscheme 'onedark'
+      vim.cmd.colorscheme 'tokyonight-night'
     end,
   },
-
+  -- { 'bluz71/vim-moonfly-colors', name = 'moonfly', lazy = true, priority = 1000 },
   { -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
     -- See `:help lualine.txt`
     opts = {
       options = {
         icons_enabled = false,
-        theme = 'onedark',
+        theme = 'tokyonight',
         component_separators = '|',
         section_separators = '',
       },
@@ -172,6 +185,22 @@ require('lazy').setup({
     end,
   },
 
+  { 'nvim-tree/nvim-tree.lua' },
+
+  {
+    'akinsho/toggleterm.nvim',
+    config = function()
+      require('toggleterm').setup()
+    end,
+  },
+
+  { 'akinsho/bufferline.nvim' },
+  { 'moll/vim-bbye' },
+  { 'windwp/nvim-autopairs' },
+  { 'windwp/nvim-ts-autotag', after = 'nvim-treesitter' },
+  -- { 'Pocco81/auto-save.nvim' },
+  { 'christoomey/vim-tmux-navigator' },
+
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
@@ -192,45 +221,101 @@ require('lazy').setup({
 -- [[ Setting options ]]
 -- See `:help vim.o`
 
+local opt = vim.opt
+
 -- Set highlight on search
-vim.o.hlsearch = false
+opt.hlsearch = false
 
 -- Make line numbers default
 vim.wo.number = true
 
 -- Enable mouse mode
-vim.o.mouse = 'a'
+opt.mouse = 'a'
 
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
-vim.o.clipboard = 'unnamedplus'
+opt.clipboard = 'unnamedplus'
 
 -- Enable break indent
-vim.o.breakindent = true
+opt.breakindent = true
 
 -- Save undo history
-vim.o.undofile = true
+opt.undofile = true
 
 -- Case insensitive searching UNLESS /C or capital in search
-vim.o.ignorecase = true
-vim.o.smartcase = true
+opt.ignorecase = true
+opt.smartcase = true
 
 -- Keep signcolumn on by default
 vim.wo.signcolumn = 'yes'
 
 -- Decrease update time
-vim.o.updatetime = 250
-vim.o.timeout = true
-vim.o.timeoutlen = 300
+opt.updatetime = 250
+opt.timeout = true
+opt.timeoutlen = 300
 
 -- Set completeopt to have a better completion experience
-vim.o.completeopt = 'menuone,noselect'
+opt.completeopt = 'menuone,noselect'
 
 -- NOTE: You should make sure your terminal supports this
-vim.o.termguicolors = true
+opt.termguicolors = true
+-- general
+opt.cmdheight = 1
+-- opt.showtabline = 0
+opt.pumheight = 10
+opt.showmode = false
+opt.laststatus = 3
+opt.ruler = false
+opt.swapfile = false
+
+-- line numbers
+opt.relativenumber = true
+opt.number = true
+
+-- tabs & indentation opt.tabstop = 2 opt.shiftwidth = 2 opt.expandtab = true opt.autoindent = true opt.smartindent = true line wrapping opt.wrap = false
+
+opt.cursorline = true
+opt.background = 'dark'
+opt.signcolumn = 'yes'
+
+-- backspace
+opt.backspace = 'indent,eol,start'
+
+-- clipboard
+opt.clipboard:append 'unnamedplus'
+
+-- split windows
+opt.splitright = true
+opt.splitbelow = true
+
+opt.iskeyword:append '-'
+opt.guicursor = 'n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,sm:block-blinkwait175-blinkoff150-blinkon175'
 
 -- [[ Basic Keymaps ]]
+local keymap = vim.keymap
+
+-- general keymaps
+
+keymap.set('i', 'jk', '<ESC>')
+keymap.set('n', '<leader>n', ':wa<CR>')
+
+keymap.set('n', '<leader>nh', ':nohl<CR>')
+
+keymap.set('n', 'x', '"_x')
+
+keymap.set('n', '<leader>+', '<C-a>')
+keymap.set('n', '<leader>-', '<C-x>')
+
+keymap.set('n', '<leader>sv', '<C-w>v') -- split window vertically
+keymap.set('n', '<leader>sh', '<C-w>s') -- split window horizontally
+keymap.set('n', '<leader>se', '<C-w>=') -- make split windows equal width
+keymap.set('n', '<leader>sx', ':close<CR>') -- close current split window
+
+keymap.set('n', '<leader>to', ':tabnew<CR>') -- open new tab
+keymap.set('n', '<leader>tx', ':tabclose<CR>') -- close current tab
+keymap.set('n', '<leader>tn', ':tabn<CR>') -- go to next tab
+keymap.set('n', '<leader>tp', ':tabp<CR>') -- go to previous tab
 
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
@@ -252,6 +337,10 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 -- [[ Configure Telescope ]]
+local actions_setup, actions = pcall(require, 'telescope.actions')
+if not actions_setup then
+  return
+end
 -- See `:help telescope` and `:help telescope.setup()`
 require('telescope').setup {
   defaults = {
@@ -259,6 +348,9 @@ require('telescope').setup {
       i = {
         ['<C-u>'] = false,
         ['<C-d>'] = false,
+        ['<C-k>'] = actions.move_selection_previous, -- move to prev result
+        ['<C-j>'] = actions.move_selection_next, -- move to next result
+        ['<C-q>'] = actions.send_selected_to_qflist + actions.open_qflist, -- send selected to quickfixlist
       },
     },
   },
@@ -278,11 +370,37 @@ vim.keymap.set('n', '<leader>/', function()
   })
 end, { desc = '[/] Fuzzily search in current buffer' })
 
-vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
+vim.keymap.set('n', '<leader>ff', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
 vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
-vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
+vim.keymap.set('n', '<leader>fs', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
+
+-- import lspsaga safely
+local saga_status, saga = pcall(require, 'lspsaga')
+if not saga_status then
+  return
+end
+
+saga.setup {
+  -- keybinds for navigation in lspsaga window
+  move_in_saga = { prev = '<C-k>', next = '<C-j>' },
+  -- use enter to open file with finder
+  finder_action_keys = {
+    open = '<CR>',
+  },
+  -- use enter to open file with definition preview
+  definition_action_keys = {
+    edit = '<CR>',
+  },
+}
+
+-- Change the Diagnostic symbols in the sign column (gutter)
+local signs = { Error = ' ', Warn = ' ', Hint = 'ﴞ ', Info = ' ' }
+for type, icon in pairs(signs) do
+  local hl = 'DiagnosticSign' .. type
+  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = '' })
+end
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
@@ -351,14 +469,14 @@ require('nvim-treesitter.configs').setup {
 }
 
 -- Diagnostic keymaps
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic message" })
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "Go to next diagnostic message" })
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = "Open floating diagnostic message" })
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = "Open diagnostics list" })
+vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
+vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
+vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
 
 -- LSP settings.
 --  This function gets run when an LSP connects to a particular buffer.
-local on_attach = function(_, bufnr)
+local on_attach = function(client, bufnr)
   -- NOTE: Remember that lua is a real programming language, and as such it is possible
   -- to define small helper and utility functions so you don't have to repeat yourself
   -- many times.
@@ -374,11 +492,13 @@ local on_attach = function(_, bufnr)
   end
 
   nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-  nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+  nmap('<leader>ca', '<cmd>Lspsaga code_action<CR>', '[C]ode [A]ction')
 
   nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
   nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-  nmap('gI', vim.lsp.buf.implementation, '[G]oto [I]mplementation')
+  nmap('gi', vim.lsp.buf.implementation, '[G]oto [I]mplementation')
+  nmap('gp', '<cmd>Lspsaga peek_definition<CR>', '[G]oto [P]eek')
+  nmap('<leader>d', '<cmd>Lspsaga show_line_diagnostics<CR>', 'Show line diagnostics')
   nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
   nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
   nmap('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
@@ -394,6 +514,11 @@ local on_attach = function(_, bufnr)
   nmap('<leader>wl', function()
     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
   end, '[W]orkspace [L]ist Folders')
+  if client.name == 'tsserver' then
+    nmap('<leader>rf', ':TypescriptRenameFile<CR>') -- rename file and update imports
+    nmap('<leader>oi', ':TypescriptOrganizeImports<CR>') -- organize imports
+    nmap('<leader>ru', ':TypescriptRemoveUnused<CR>') -- remove unused variables
+  end
 
   -- Create a command `:Format` local to the LSP buffer
   vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
@@ -468,7 +593,7 @@ cmp.setup {
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
     },
-    ['<Tab>'] = cmp.mapping(function(fallback)
+    ['<C-j>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
       elseif luasnip.expand_or_jumpable() then
@@ -477,7 +602,7 @@ cmp.setup {
         fallback()
       end
     end, { 'i', 's' }),
-    ['<S-Tab>'] = cmp.mapping(function(fallback)
+    ['<C-k>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_prev_item()
       elseif luasnip.jumpable(-1) then
@@ -493,5 +618,568 @@ cmp.setup {
   },
 }
 
+vim.g.nvim_tree_icons = {
+  default = '',
+  symlink = '',
+  git = {
+    unstaged = '',
+    staged = 'S',
+    unmerged = '',
+    renamed = '➜',
+    deleted = '',
+    untracked = 'U',
+    ignored = '◌',
+  },
+  folder = {
+    default = '',
+    open = '',
+    empty = '',
+    empty_open = '',
+    symlink = '',
+  },
+}
+
+local status_ok, nvim_tree = pcall(require, 'nvim-tree')
+if not status_ok then
+  return
+end
+
+local config_status_ok, nvim_tree_config = pcall(require, 'nvim-tree.config')
+if not config_status_ok then
+  return
+end
+
+local tree_cb = nvim_tree_config.nvim_tree_callback
+
+nvim_tree.setup {
+  disable_netrw = true,
+  hijack_netrw = true,
+  open_on_tab = false,
+  hijack_cursor = false,
+  update_cwd = true,
+  view = {
+    width = 50,
+    adaptive_size = true,
+    centralize_selection = true,
+    hide_root_folder = false,
+    side = 'left',
+    preserve_window_proportions = true,
+    signcolumn = 'yes',
+    mappings = {
+      custom_only = false,
+      list = {
+        { key = { 'l', '<CR>', 'o' }, cb = tree_cb 'edit' },
+        { key = 'h', cb = tree_cb 'close_node' },
+        { key = 'v', cb = tree_cb 'vsplit' },
+      },
+    },
+    number = false,
+    relativenumber = false,
+    float = {
+      enable = true,
+      quit_on_focus_loss = true,
+      open_win_config = {
+        relative = 'editor',
+        border = 'rounded',
+        width = 50,
+        height = 100,
+        row = 1,
+        col = 1,
+      },
+    },
+  },
+  renderer = {
+    add_trailing = false,
+    group_empty = false,
+    highlight_git = false,
+    full_name = false,
+    highlight_opened_files = 'none',
+    root_folder_modifier = ':~',
+    indent_width = 2,
+    indent_markers = {
+      enable = false,
+      inline_arrows = true,
+      icons = {
+        corner = '└',
+        edge = '│',
+        item = '│',
+        bottom = '─',
+        none = ' ',
+      },
+    },
+    icons = {
+      webdev_colors = true,
+      git_placement = 'before',
+      padding = ' ',
+      symlink_arrow = ' ➛ ',
+      show = {
+        file = true,
+        folder = true,
+        folder_arrow = true,
+        git = true,
+      },
+      glyphs = {
+        default = '',
+        symlink = '',
+        bookmark = '',
+        folder = {
+          arrow_closed = '',
+          arrow_open = '',
+          default = '',
+          open = '',
+          empty = '',
+          empty_open = '',
+          symlink = '',
+          symlink_open = '',
+        },
+        git = {
+          unstaged = '✗',
+          staged = '✓',
+          unmerged = '',
+          renamed = '➜',
+          untracked = '★',
+          deleted = '',
+          ignored = '◌',
+        },
+      },
+    },
+    special_files = { 'Cargo.toml', 'Makefile', 'README.md', 'readme.md' },
+    symlink_destination = true,
+  },
+  hijack_directories = {
+    enable = true,
+    auto_open = true,
+  },
+  update_focused_file = {
+    enable = false,
+    update_root = false,
+    ignore_list = {},
+  },
+  ignore_ft_on_setup = {},
+  system_open = {
+    cmd = '',
+    args = {},
+  },
+  diagnostics = {
+    enable = false,
+    show_on_dirs = false,
+    debounce_delay = 50,
+    severity = {
+      min = vim.diagnostic.severity.HINT,
+      max = vim.diagnostic.severity.ERROR,
+    },
+    icons = {
+      hint = '',
+      info = '',
+      warning = '',
+      error = '',
+    },
+  },
+  filters = {
+    dotfiles = false,
+    custom = {},
+    exclude = {},
+  },
+  filesystem_watchers = {
+    enable = true,
+    debounce_delay = 50,
+    ignore_dirs = {},
+  },
+  git = {
+    enable = true,
+    ignore = true,
+    show_on_dirs = true,
+    timeout = 400,
+  },
+  actions = {
+    use_system_clipboard = true,
+    change_dir = {
+      enable = true,
+      global = false,
+      restrict_above_cwd = false,
+    },
+    expand_all = {
+      max_folder_discovery = 300,
+      exclude = {},
+    },
+    file_popup = {
+      open_win_config = {
+        col = 1,
+        row = 1,
+        relative = 'cursor',
+        border = 'shadow',
+        style = 'minimal',
+      },
+    },
+    open_file = {
+      quit_on_open = false,
+      resize_window = true,
+      window_picker = {
+        enable = true,
+        chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
+        exclude = {
+          filetype = { 'notify', 'packer', 'qf', 'diff', 'fugitive', 'fugitiveblame' },
+          buftype = { 'nofile', 'terminal', 'help' },
+        },
+      },
+    },
+    remove_file = {
+      close_window = true,
+    },
+  },
+  trash = {
+    cmd = 'gio trash',
+    require_confirm = true,
+  },
+  live_filter = {
+    prefix = '[FILTER]: ',
+    always_show_folders = true,
+  },
+  tab = {
+    sync = {
+      open = false,
+      close = false,
+      ignore = {},
+    },
+  },
+  notify = {
+    threshold = vim.log.levels.INFO,
+  },
+  log = {
+    enable = false,
+    truncate = false,
+    types = {
+      all = false,
+      config = false,
+      copy_paste = false,
+      dev = false,
+      diagnostics = false,
+      git = false,
+      profile = false,
+      watcher = false,
+    },
+  },
+}
+
+-- nvim-tree
+keymap.set('n', '<leader>e', ':NvimTreeToggle<CR>')
+keymap.set('n', '<leader>f', ':NvimTreeFocus<CR>')
+
+-- import null-ls plugin safely
+local setup, null_ls = pcall(require, 'null-ls')
+if not setup then
+  return
+end
+
+-- for conciseness
+local formatting = null_ls.builtins.formatting -- to setup formatters
+local diagnostics = null_ls.builtins.diagnostics -- to setup linters
+
+-- to setup format on save
+local augroup = vim.api.nvim_create_augroup('LspFormatting', {})
+
+-- configure null_ls
+null_ls.setup {
+  -- setup formatters & linters
+  sources = {
+    --  to disable file types use
+    --  "formatting.prettier.with({disabled_filetypes: {}})" (see null-ls docs)
+    formatting.prettier, -- js/ts formatter
+    formatting.stylua, -- lua formatter
+    diagnostics.eslint_d.with { -- js/ts linter
+      -- only enable eslint if root has .eslintrc.js (not in youtube nvim video)
+      condition = function(utils)
+        return utils.root_has_file '.eslintrc.js' -- change file extension if you use something else
+      end,
+    },
+  },
+  -- configure format on save
+  on_attach = function(current_client, bufnr)
+    if current_client.supports_method 'textDocument/formatting' then
+      vim.api.nvim_clear_autocmds { group = augroup, buffer = bufnr }
+      vim.api.nvim_create_autocmd('BufWritePre', {
+        group = augroup,
+        buffer = bufnr,
+        callback = function()
+          vim.lsp.buf.format {
+            filter = function(client)
+              --  only use null-ls for formatting instead of lsp server
+              return client.name == 'null-ls'
+            end,
+            bufnr = bufnr,
+          }
+        end,
+      })
+    end
+  end,
+}
+
+local Terminal = require('toggleterm.terminal').Terminal
+
+local git_tui = 'lazygit'
+
+local git_client = Terminal:new {
+  cmd = git_tui,
+  hidden = true,
+  direction = 'float',
+  float_opts = {
+    border = 'double',
+  },
+}
+
+function git_client_toggle()
+  git_client:toggle()
+end
+
+local opts = { noremap = true, silent = true }
+
+vim.keymap.set('n', '<leader>g', '<cmd>lua git_client_toggle()<CR>', opts)
+
+local buff_stat_ok, bufferline = pcall(require, 'bufferline')
+if not buff_stat_ok then
+  return
+end
+
+bufferline.setup {
+  options = {
+    numbers = 'none', -- | "ordinal" | "buffer_id" | "both" | function({ ordinal, id, lower, raise }): string,
+    close_command = 'Bdelete! %d', -- can be a string | function, see "Mouse actions"
+    right_mouse_command = 'Bdelete! %d', -- can be a string | function, see "Mouse actions"
+    left_mouse_command = 'buffer %d', -- can be a string | function, see "Mouse actions"
+    middle_mouse_command = nil, -- can be a string | function, see "Mouse actions"
+    -- NOTE: this plugin is designed with this icon in mind,
+    -- and so changing this is NOT recommended, this is intended
+    -- as an escape hatch for people who cannot bear it for whatever reason
+    indicator = {
+      icon = '▎', -- this should be omitted if indicator style is not 'icon'
+      style = 'icon',
+    },
+    buffer_close_icon = '',
+    -- buffer_close_icon = '',
+    modified_icon = '●',
+    close_icon = '',
+    -- close_icon = '',
+    left_trunc_marker = '',
+    right_trunc_marker = '',
+    --- name_formatter can be used to change the buffer's label in the bufferline.
+    --- Please note some names can/will break the
+    --- bufferline so use this at your discretion knowing that it has
+    --- some limitations that will *NOT* be fixed.
+    -- name_formatter = function(buf)  -- buf contains a "name", "path" and "bufnr"
+    --   -- remove extension from markdown files for example
+    --   if buf.name:match('%.md') then
+    --     return vim.fn.fnamemodify(buf.name, ':t:r')
+    --   end
+    -- end,
+    max_name_length = 30,
+    max_prefix_length = 30, -- prefix used when a buffer is de-duplicated
+    tab_size = 21,
+    diagnostics = false, -- | "nvim_lsp" | "coc",
+    diagnostics_update_in_insert = false,
+    -- diagnostics_indicator = function(count, level, diagnostics_dict, context)
+    --   return "("..count..")"
+    -- end,
+    -- NOTE: this will be called a lot so don't do any heavy processing here
+    -- custom_filter = function(buf_number)
+    --   -- filter out filetypes you don't want to see
+    --   if vim.bo[buf_number].filetype ~= "<i-dont-want-to-see-this>" then
+    --     return true
+    --   end
+    --   -- filter out by buffer name
+    --   if vim.fn.bufname(buf_number) ~= "<buffer-name-I-dont-want>" then
+    --     return true
+    --   end
+    --   -- filter out based on arbitrary rules
+    --   -- e.g. filter out vim wiki buffer from tabline in your work repo
+    --   if vim.fn.getcwd() == "<work-repo>" and vim.bo[buf_number].filetype ~= "wiki" then
+    --     return true
+    --   end
+    -- end,
+    offsets = { { filetype = 'NvimTree', text = '', padding = 1, separator = true } },
+    show_buffer_icons = true,
+    show_buffer_close_icons = true,
+    show_close_icon = true,
+    show_tab_indicators = true,
+    persist_buffer_sort = true, -- whether or not custom sorted buffers should persist
+    -- can also be a table containing 2 custom separators
+    -- [focused and unfocused]. eg: { '|', '|' }
+    separator_style = 'thin', -- | "thick" | "thin" | { 'any', 'any' },
+    enforce_regular_tabs = true,
+    always_show_bufferline = true,
+    -- sort_by = 'id' | 'extension' | 'relative_directory' | 'directory' | 'tabs' | function(buffer_a, buffer_b)
+    --   -- add custom logic
+    --   return buffer_a.modified > buffer_b.modified
+    -- end
+  },
+  highlights = {
+    fill = {
+      fg = { attribute = 'fg', highlight = '#ff0000' },
+      bg = { attribute = 'bg', highlight = 'TabLine' },
+    },
+    background = {
+      fg = { attribute = 'fg', highlight = 'TabLine' },
+      bg = { attribute = 'bg', highlight = 'TabLine' },
+    },
+
+    -- buffer_selected = {
+    --   fg = {attribute='fg',highlight='#ff0000'},
+    --   bg = {attribute='bg',highlight='#0000ff'},
+    --   gui = 'none'
+    --   },
+    buffer_visible = {
+      fg = { attribute = 'fg', highlight = 'TabLine' },
+      bg = { attribute = 'bg', highlight = 'TabLine' },
+    },
+
+    close_button = {
+      fg = { attribute = 'fg', highlight = 'TabLine' },
+      bg = { attribute = 'bg', highlight = 'TabLine' },
+    },
+    close_button_visible = {
+      fg = { attribute = 'fg', highlight = 'TabLine' },
+      bg = { attribute = 'bg', highlight = 'TabLine' },
+    },
+    -- close_button_selected = {
+    --   fg = {attribute='fg',highlight='TabLineSel'},
+    --   bg ={attribute='bg',highlight='TabLineSel'}
+    --   },
+
+    tab_selected = {
+      fg = { attribute = 'fg', highlight = 'Normal' },
+      bg = { attribute = 'bg', highlight = 'Normal' },
+    },
+    tab = {
+      fg = { attribute = 'fg', highlight = 'TabLine' },
+      bg = { attribute = 'bg', highlight = 'TabLine' },
+    },
+    tab_close = {
+      -- fg = {attribute='fg',highlight='LspDiagnosticsDefaultError'},
+      fg = { attribute = 'fg', highlight = 'TabLineSel' },
+      bg = { attribute = 'bg', highlight = 'Normal' },
+    },
+
+    duplicate_selected = {
+      fg = { attribute = 'fg', highlight = 'TabLineSel' },
+      bg = { attribute = 'bg', highlight = 'TabLineSel' },
+      italic = true,
+    },
+    duplicate_visible = {
+      fg = { attribute = 'fg', highlight = 'TabLine' },
+      bg = { attribute = 'bg', highlight = 'TabLine' },
+      italic = true,
+    },
+    duplicate = {
+      fg = { attribute = 'fg', highlight = 'TabLine' },
+      bg = { attribute = 'bg', highlight = 'TabLine' },
+      italic = true,
+    },
+
+    modified = {
+      fg = { attribute = 'fg', highlight = 'TabLine' },
+      bg = { attribute = 'bg', highlight = 'TabLine' },
+    },
+    modified_selected = {
+      fg = { attribute = 'fg', highlight = 'Normal' },
+      bg = { attribute = 'bg', highlight = 'Normal' },
+    },
+    modified_visible = {
+      fg = { attribute = 'fg', highlight = 'TabLine' },
+      bg = { attribute = 'bg', highlight = 'TabLine' },
+    },
+
+    separator = {
+      fg = { attribute = 'bg', highlight = 'TabLine' },
+      bg = { attribute = 'bg', highlight = 'TabLine' },
+    },
+    separator_selected = {
+      fg = { attribute = 'bg', highlight = 'Normal' },
+      bg = { attribute = 'bg', highlight = 'Normal' },
+    },
+    -- separator_visible = {
+    --   fg = {attribute='bg',highlight='TabLine'},
+    --   bg = {attribute='bg',highlight='TabLine'}
+    --   },
+    indicator_selected = {
+      fg = { attribute = 'fg', highlight = 'LspDiagnosticsDefaultHint' },
+      bg = { attribute = 'bg', highlight = 'Normal' },
+    },
+  },
+}
+
+-- local auto_status_ok, autosave = pcall(require, 'auto-save')
+-- if not auto_status_ok then
+--   return
+-- end
+--
+-- autosave.setup {
+--   enabled = true, -- start auto-save when the plugin is loaded (i.e. when your package manager loads it)
+--   execution_message = {
+--     message = function() -- message to print on save
+--       return ('AutoSave: saved at ' .. vim.fn.strftime '%H:%M:%S')
+--     end,
+--     dim = 0.18, -- dim the color of `message`
+--     cleaning_interval = 1250, -- (milliseconds) automatically clean MsgArea after displaying `message`. See :h MsgArea
+--   },
+--   -- trigger_events = { 'InsertLeave' }, -- vim events that trigger auto-save. See :h events
+--   -- function that determines whether to save the current buffer or not
+--   -- return true: if buffer is ok to be saved
+--   -- return false: if it's not ok to be saved
+--   condition = function(buf)
+--     local fn = vim.fn
+--     local utils = require 'auto-save.utils.data'
+--
+--     if
+--       fn.getbufvar(buf, '&modifiable') == 1
+--       and utils.not_in(fn.getbufvar(buf, '&filetype'), {})
+--       and utils.not_in(fn.expand '%:t', {
+--         'plugins.lua',
+--         'auto-save.lua',
+--       })
+--     then
+--       return true -- met condition(s), can save
+--     end
+--     return false -- can't save
+--   end,
+--   write_all_buffers = false, -- write all buffers when the current one meets `condition`
+--   debounce_delay = 135, -- saves the file at most every `debounce_delay` milliseconds
+--   callbacks = { -- functions to be executed at different intervals
+--     enabling = nil, -- ran when enabling auto-save
+--     disabling = nil, -- ran when disabling auto-save
+--     before_asserting_save = nil, -- ran before checking `condition`
+--     before_saving = nil, -- ran before doing the actual save
+--     after_saving = nil, -- ran after doing the actual save
+--   },
+-- }
+
+-- import nvim-autopairs safely
+local autopairs_setup, autopairs = pcall(require, 'nvim-autopairs')
+if not autopairs_setup then
+  return
+end
+
+-- configure autopairs
+autopairs.setup {
+  check_ts = true, -- enable treesitter
+  ts_config = {
+    lua = { 'string' }, -- don't add pairs in lua string treesitter nodes
+    javascript = { 'template_string' }, -- don't add pairs in javscript template_string treesitter nodes
+    java = false, -- don't check treesitter on java
+  },
+}
+
+-- import nvim-autopairs completion functionality safely
+local cmp_autopairs_setup, cmp_autopairs = pcall(require, 'nvim-autopairs.completion.cmp')
+if not cmp_autopairs_setup then
+  return
+end
+
+-- import nvim-cmp plugin safely (completions plugin)
+local cmp_setup, cmp = pcall(require, 'cmp')
+if not cmp_setup then
+  return
+end
+
+-- make autopairs and completion work together
+cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
